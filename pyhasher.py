@@ -2,6 +2,7 @@ import os
 import hashlib
 import argparse
 from pathlib import Path
+import glob
 parser = argparse.ArgumentParser(description='Find and search hashes')
 parser.add_argument('-f','--file', type=str,help='File to hash. Do not use in conjuction with folder.')
 parser.add_argument('-fo','--folder',type=str,help='Folder to recursively hash or search. Do not use in conjuction with file.')
@@ -27,25 +28,20 @@ else:
     try:
         if args.file:
             print(args.file)
+            print('file')
             if args.hash == 'MD5' or args.hash == 'Both':
                 print('\tMD5: ' + hashlib.md5(open(args.file, 'rb').read()).hexdigest())
             if args.hash == 'SHA256' or args.hash == 'Both':
                 print('\tSHA256: ' + hashlib.sha256(open(args.file, 'rb').read()).hexdigest())
         elif args.folder:
-            for root, dirs, files in os.walk(args.folder):
-                path = root.split(os.sep)
-                print((len(path) - 1) * '---', os.path.basename(root))
-                for file in files:
-                        print(len(path) * '---', file)
-                        #print(Path(os.path.join(os.path.basename(root),file)).resolve())
-                        if os.path.splitdrive(os.getcwd())[1].split('/')[len(os.path.splitdrive(os.getcwd())[1].split('/')) -1 ] != os.path.basename(root):
-                            file = Path(os.path.join(os.path.basename(root),file)).resolve()
-                        print(file)
-                        #print(os.path.abspath(file))
-                        if args.hash == 'MD5' or args.hash == 'Both':
-                            print('\tMD5: ' + hashlib.md5(open(file, 'rb').read()).hexdigest())
-                        if args.hash == 'SHA256' or args.hash == 'Both':
-                            print('\tSHA256: ' + hashlib.sha256(open(file, 'rb').read()).hexdigest())
+            print('folder')
+            for filename in glob.iglob(args.folder + '**/**', recursive=True):
+                print(filename)
+                if not os.path.isdir(filename):
+                    if args.hash == 'MD5' or args.hash == 'Both':
+                        print('\tMD5: ' + hashlib.md5(open(filename, 'rb').read()).hexdigest())
+                    if args.hash == 'SHA256' or args.hash == 'Both':
+                        print('\tSHA256: ' + hashlib.sha256(open(filename, 'rb').read()).hexdigest())
         else:
             raise Exception('Not enough input to arguments. Need a folder(-fo) or file(-f)')
     except Exception as e:

@@ -5,12 +5,12 @@ from pathlib import Path
 import glob
 parser = argparse.ArgumentParser(description='Find and search hashes.')
 parser.add_argument('-f','--file', type=str,help='File to hash. Do not use in conjuction with folder.')
-parser.add_argument('-fo','--folder',type=str,help='Folder to recursively hash or search. Do not use in conjuction with file.')
+parser.add_argument('-fo','--folder',type=str,help='Folder to recursively hash or search. Do not use in conjuction with file. If searching a folder non recursively ensure that you do not add os.sep i.e. "/" or it will ignore files in the root dir of your search. Adding "/" will search only subdirectories' )
 parser.add_argument('-s','--search',type=str,help='Search for a hash. Pass the hash here.')
 parser.add_argument('-ha','--hash',type=str,choices=['MD5','SHA256','Both'],default='Both',help='''Choose hash type. If used in 
                     conjuction with search this will speed up the process to choose. Else this will return the hash for the files passed.Default will be both.''')
 parser.add_argument('-v','--verbose',type=bool,choices=[True,False],default=False,help='Run with verbose output.')
-parser.add_argument('-r','--recursive',default=True,action='store_false',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
+parser.add_argument('-r','--recursive',default=False,action='store_true',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
 args = parser.parse_args()
 
 

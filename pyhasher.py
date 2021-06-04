@@ -10,7 +10,7 @@ parser.add_argument('-s','--search',type=str,help='Search for a hash. Pass the h
 parser.add_argument('-ha','--hash',type=str,choices=['MD5','SHA256','Both'],default='Both',help='''Choose hash type. If used in 
                     conjuction with search this will speed up the process to choose. Else this will return the hash for the files passed.Default will be both.''')
 parser.add_argument('-v','--verbose',type=bool,choices=[True,False],default=False,help='Run with verbose output.')
-parser.add_argument('-r','--recursive',default=False,action='store_true',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
+parser.add_argument('-r','--recursive',default=True,action='store_false',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
 args = parser.parse_args()
 
 
@@ -37,6 +37,19 @@ if args.search:
                     print(args.file + ' did not match hash provided')
         elif args.folder:
             print('folder search')
+            for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
+                if not os.path.isdir(filename):
+                    if args.hash == 'MD5':
+                        if args.search == hashlib.md5(open(filename, 'rb').read()).hexdigest():
+                            print(filename + ' matched MD5 hash')
+                    if args.hash == 'SHA256':
+                        if args.search == hashlib.sha256(open(filename, 'rb').read()).hexdigest():
+                            print(filename + ' matched SHA256 hash')
+                    if args.hash == 'Both':
+                        if args.search == hashlib.md5(open(filename, 'rb').read()).hexdigest():
+                            print(filename + ' matched MD5 hash')
+                        elif args.search == hashlib.sha256(open(filename, 'rb').read()).hexdigest():
+                            print(filename + ' matched SHA256 hash')
         else:
             raise Exception('Not enough input to arguments. Need a folder(-fo) or file(-f)')
     except Exception as e:
@@ -52,6 +65,7 @@ else:
                 print('\tSHA256: ' + hashlib.sha256(open(args.file, 'rb').read()).hexdigest())
         elif args.folder:
             print('folder')
+            print(args.recursive)
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
                 if not os.path.isdir(filename):
                     print('\t' + filename)

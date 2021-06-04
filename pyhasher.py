@@ -18,7 +18,23 @@ if args.search:
     print('searching')
     try:
         if args.file:
-            print('file search')
+            if args.hash == 'MD5':
+                if args.search == hashlib.md5(open(args.file, 'rb').read()).hexdigest():
+                    print(args.file + ' matched MD5 hash')
+                else:
+                    print(args.file + ' did not match hash provided')
+            if args.hash == 'SHA256':
+                if args.search == hashlib.sha256(open(args.file, 'rb').read()).hexdigest():
+                    print(args.file + ' matched SHA256 hash')
+                else:
+                    print(args.file + ' did not match hash provided')
+            if args.hash == 'Both':
+                if args.search == hashlib.md5(open(args.file, 'rb').read()).hexdigest():
+                    print(args.file + ' matched MD5 hash')
+                elif args.search == hashlib.sha256(open(args.file, 'rb').read()).hexdigest():
+                    print(args.file + ' matched SHA256 hash')
+                else:
+                    print(args.file + ' did not match hash provided')
         elif args.folder:
             print('folder search')
         else:
@@ -37,7 +53,6 @@ else:
         elif args.folder:
             print('folder')
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
-                #print(args.recursive)
                 if not os.path.isdir(filename):
                     print('\t' + filename)
                     if args.hash == 'MD5' or args.hash == 'Both':

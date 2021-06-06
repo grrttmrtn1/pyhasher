@@ -13,6 +13,12 @@ parser.add_argument('-v','--verbose',type=bool,choices=[True,False],default=Fals
 parser.add_argument('-r','--recursive',default=False,action='store_true',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
 args = parser.parse_args()
 
+def getHash(file, hashType):
+    if hashType == 'MD5':
+        hash = hashlib.md5(open(args.file, 'rb').read()).hexdigest()
+    if hashType == 'SHA256':
+        hash = hashlib.sha256(open(args.file, 'rb').read()).hexdigest()
+    return hash
 
 if args.search:
     print('searching')

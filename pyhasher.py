@@ -57,12 +57,12 @@ if args.search:
 else:
     try:
         if args.file:
-            print(args.file)
-            print('file')
-            if args.hash == 'MD5' or args.hash == 'Both':
-                print('\tMD5: ' + hashlib.md5(open(args.file, 'rb').read()).hexdigest())
-            if args.hash == 'SHA256' or args.hash == 'Both':
-                print('\tSHA256: ' + hashlib.sha256(open(args.file, 'rb').read()).hexdigest())
+            print(f"{args.file}")
+            if args.hash == 'Both':
+                print(f"\tMD5: {getHash(args.file, 'MD5')}")
+                print(f"\tSHA256: {getHash(args.file, 'SHA256')}")         
+            else:
+                print(f"\t{args.hash}: {getHash(args.file, args.hash)}")
         elif args.folder:
             print('folder')
             print(args.recursive)

@@ -64,15 +64,14 @@ else:
             else:
                 print(f"\t{args.hash}: {getHash(args.file, args.hash)}")
         elif args.folder:
-            print('folder')
-            print(args.recursive)
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
                 if not os.path.isdir(filename):
-                    print('\t' + filename)
-                    if args.hash == 'MD5' or args.hash == 'Both':
-                        print('\t\tMD5: ' + hashlib.md5(open(filename, 'rb').read()).hexdigest())
-                    if args.hash == 'SHA256' or args.hash == 'Both':
-                        print('\t\tSHA256: ' + hashlib.sha256(open(filename, 'rb').read()).hexdigest())
+                    print('\t--' + filename)
+                    if args.hash == 'Both':
+                        print(f"\t\tMD5: {getHash(filename, 'MD5')}")
+                        print(f"\t\tSHA256: {getHash(filename, 'SHA256')}")         
+                    else:
+                        print(f"\t\t{args.hash}: {getHash(args.file, args.hash)}")
                 else:
                     print(filename)
         else:

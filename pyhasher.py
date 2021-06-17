@@ -15,9 +15,9 @@ args = parser.parse_args()
 
 def getHash(file, hashType):
     if hashType == 'MD5':
-        hash = hashlib.md5(open(args.file, 'rb').read()).hexdigest()
+        hash = hashlib.md5(open(file, 'rb').read()).hexdigest()
     if hashType == 'SHA256':
-        hash = hashlib.sha256(open(args.file, 'rb').read()).hexdigest()
+        hash = hashlib.sha256(open(file, 'rb').read()).hexdigest()
     return hash
 
 if args.search:
@@ -41,17 +41,15 @@ if args.search:
             print('folder search')
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
                 if not os.path.isdir(filename):
-                    if args.hash == 'MD5':
-                        if args.search == hashlib.md5(open(filename, 'rb').read()).hexdigest():
-                            print(filename + ' matched MD5 hash')
-                    if args.hash == 'SHA256':
-                        if args.search == hashlib.sha256(open(filename, 'rb').read()).hexdigest():
-                            print(filename + ' matched SHA256 hash')
                     if args.hash == 'Both':
-                        if args.search == hashlib.md5(open(filename, 'rb').read()).hexdigest():
-                            print(filename + ' matched MD5 hash')
-                        elif args.search == hashlib.sha256(open(filename, 'rb').read()).hexdigest():
-                            print(filename + ' matched SHA256 hash')
+                        if args.search == getHash(filename, 'MD5'):
+                            print(f"{filename} matched MD5 hash")
+                        elif args.search == getHash(filename, 'SHA256'):
+                            print(f"{filename} matched SHA256 hash")
+                    else:
+                        if args.search == getHash(filename, args.hash):
+                            print(f"{filename} matched {args.hash} hash")
+
         else:
             raise Exception('Not enough input to arguments. Need a folder(-fo) or file(-f)')
     except Exception as e:

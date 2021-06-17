@@ -21,7 +21,6 @@ def getHash(file, hashType):
     return hash
 
 if args.search:
-    print('searching')
     try:
         if args.file:
             if args.hash == 'Both':
@@ -38,7 +37,6 @@ if args.search:
                     print(f"{args.file}did not match hash provided")
 
         elif args.folder:
-            print('folder search')
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
                 if not os.path.isdir(filename):
                     if args.hash == 'Both':
@@ -71,7 +69,7 @@ else:
                         print(f"\t\tMD5: {getHash(filename, 'MD5')}")
                         print(f"\t\tSHA256: {getHash(filename, 'SHA256')}")         
                     else:
-                        print(f"\t\t{args.hash}: {getHash(args.file, args.hash)}")
+                        print(f"\t\t{args.hash}: {getHash(filename, args.hash)}")
                 else:
                     print(filename)
         else:

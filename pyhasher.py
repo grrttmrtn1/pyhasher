@@ -9,8 +9,9 @@ parser.add_argument('-fo','--folder',type=str,help='Folder to recursively hash o
 parser.add_argument('-s','--search',type=str,help='Search for a hash. Pass the hash here.')
 parser.add_argument('-ha','--hash',type=str,choices=['MD5','SHA256','Both'],default='Both',help='''Choose hash type. If used in 
                     conjuction with search this will speed up the process to choose. Else this will return the hash for the files passed.Default will be both.''')
-parser.add_argument('-v','--verbose',type=bool,choices=[True,False],default=False,help='Run with verbose output.')
+parser.add_argument('-v','--verbose',default=False,action='store_true',help='Run with verbose output.')
 parser.add_argument('-r','--recursive',default=False,action='store_true',help='Recursively search nested folders. Default is False. Pass flag without argument to set True.')
+parser.add_argument('-d','--debug',default=False,action='store_true',help='Print out exceptions during folder operations.')
 args = parser.parse_args()
 
 def getHash(file, hashType):
@@ -38,15 +39,21 @@ if args.search:
 
         elif args.folder:
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
-                if not os.path.isdir(filename):
-                    if args.hash == 'Both':
-                        if args.search == getHash(filename, 'MD5'):
-                            print(f"{filename} matched MD5 hash")
-                        elif args.search == getHash(filename, 'SHA256'):
-                            print(f"{filename} matched SHA256 hash")
-                    else:
-                        if args.search == getHash(filename, args.hash):
-                            print(f"{filename} matched {args.hash} hash")
+                if args.verbose:
+                    print(filename)
+                try:
+                    if not os.path.isdir(filename):
+                        if args.hash == 'Both':
+                            if args.search == getHash(filename, 'MD5'):
+                                print(f"{filename} matched MD5 hash")
+                            elif args.search == getHash(filename, 'SHA256'):
+                                print(f"{filename} matched SHA256 hash")
+                        else:
+                            if args.search == getHash(filename, args.hash):
+                                print(f"{filename} matched {args.hash} hash")
+                except Exception as e:
+                    print(e)
+                    continue
 
         else:
             raise Exception('Not enough input to arguments. Need a folder(-fo) or file(-f)')
@@ -63,15 +70,19 @@ else:
                 print(f"\t{args.hash}: {getHash(args.file, args.hash)}")
         elif args.folder:
             for filename in glob.iglob(args.folder + '**/**', recursive=args.recursive):
-                if not os.path.isdir(filename):
-                    print('\t--' + filename)
-                    if args.hash == 'Both':
-                        print(f"\t\tMD5: {getHash(filename, 'MD5')}")
-                        print(f"\t\tSHA256: {getHash(filename, 'SHA256')}")         
+                try:
+                    if not os.path.isdir(filename):
+                        print('\t--' + filename)
+                        if args.hash == 'Both':
+                            print(f"\t\tMD5: {getHash(filename, 'MD5')}")
+                            print(f"\t\tSHA256: {getHash(filename, 'SHA256')}")         
+                        else:
+                            print(f"\t\t{args.hash}: {getHash(filename, args.hash)}")
                     else:
-                        print(f"\t\t{args.hash}: {getHash(filename, args.hash)}")
-                else:
-                    print(filename)
+                        print(filename)
+                except Exception as e:
+                    print(e)
+                    continue
         else:
             raise Exception('Not enough input to arguments. Need a folder(-fo) or file(-f)')
     except Exception as e:
